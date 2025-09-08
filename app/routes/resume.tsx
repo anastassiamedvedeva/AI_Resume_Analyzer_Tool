@@ -47,8 +47,63 @@ const Resume = () => {
             const imageUrl = URL.createObjectURL(imageBlob);
             setImageUrl(imageUrl);
 
-            setFeedback(data.feedback);
-            console.log({resumeUrl, imageUrl, feedback: data.feedback});
+            // Transform the flat feedback data to match your interface
+            const transformedFeedback = {
+                overall_rating: data.feedback.overall_rating || 0,
+                ATS: {
+                    ats_compatibility: data.feedback.ats_compatibility || 0,
+                    tips: (data.feedback.improvement_suggestions || []).map((suggestion: string) => ({
+                        type: "improve" as const,
+                        tip: suggestion
+                    }))
+                },
+                toneAndStyle: {
+                    score: data.feedback.format_and_design || 0,
+                    tips: [
+                        ...(data.feedback.strengths || []).slice(0, 3).map((strength: string) => ({
+                            type: "good" as const,
+                            tip: strength,
+                            explanation: "This demonstrates good tone and style in your resume."
+                        })),
+                        ...(data.feedback.areas_of_concern || []).slice(0, 2).map((concern: string) => ({
+                            type: "improve" as const,
+                            tip: concern,
+                            explanation: "Consider addressing this to improve your resume's tone and style."
+                        }))
+                    ]
+                },
+                content: {
+                    score: data.feedback.content_quality || 0,
+                    tips: (data.feedback.improvement_suggestions || []).slice(0, 4).map((suggestion: string) => ({
+                        type: "improve" as const,
+                        tip: suggestion,
+                        explanation: "This will help improve your content quality and relevance."
+                    }))
+                },
+                structure: {
+                    score: data.feedback.format_and_design || 0,
+                    tips: (data.feedback.strengths || [])
+                        .filter((s: string) => s.toLowerCase().includes('format') || s.toLowerCase().includes('organize'))
+                        .map((strength: string) => ({
+                            type: "good" as const,
+                            tip: strength,
+                            explanation: "This shows good structural elements in your resume."
+                        }))
+                },
+                skills: {
+                    score: data.feedback.relevance_to_position || 0,
+                    tips: (data.feedback.areas_of_concern || [])
+                        .filter((c: string) => c.toLowerCase().includes('skill') || c.toLowerCase().includes('experience'))
+                        .map((concern: string) => ({
+                            type: "improve" as const,
+                            tip: concern,
+                            explanation: "Focus on highlighting these skills more effectively."
+                        }))
+                }
+            };
+
+            setFeedback(transformedFeedback);
+            console.log({resumeUrl, imageUrl, feedback: transformedFeedback});
         }
 
         loadResume();
@@ -82,15 +137,22 @@ const Resume = () => {
                     <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
                     {feedback ? (
                         <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
-                            <Summary feedback={feedback} />
-                            <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []} />
-                            <Details feedback={feedback} />
+                            {feedback ? (
+                                <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
+                                    <Summary feedback={feedback} />
+                                    <ATS score={feedback.ATS.ats_compatibility || 0} suggestions={feedback.ATS.tips || []} />
+                                    <Details feedback={feedback} />
+                                </div>
+                            ) : (
+                                <img src="/images/resume-scan-2.gif" alt="Scanning your resume" className="w-full" />
+                            )}
                         </div>
                     ) : (
                         <img src="/images/resume-scan-2.gif" alt="Scanning your resume" className="w-full" />
-                        )}
+                    )}
                 </section>
             </div>
+
         </main>
     )
 }
