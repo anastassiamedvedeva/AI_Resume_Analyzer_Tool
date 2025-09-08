@@ -4,5 +4,4 @@ const Ats = () => {
         <div>ATS</div>
     )
 }
-
-export default Ats;
+ export default Ats

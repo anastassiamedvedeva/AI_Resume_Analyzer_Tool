@@ -1,8 +1,8 @@
 
-const Summary = () =>  {
+const Summary = () => {
     return (
         <div>Summary</div>
     )
 }
 
-export default Summary;
+export default Summary
