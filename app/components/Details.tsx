@@ -119,7 +119,6 @@ const Details = ({ feedback }: { feedback: Feedback }) => {
                     </AccordionHeader>
                     <AccordionContent itemId="tone-style">
                         <CategoryContent tips={feedback.toneAndStyle.tips} />
-
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem id="content">

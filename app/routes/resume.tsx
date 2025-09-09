@@ -32,6 +32,7 @@ const Resume = () => {
 
             // Parse and read data
             const data = JSON.parse(resume);
+            console.log(data);
 
             const resumeBlob = await fs.read(data.resumePath);
             if(!resumeBlob) return;
