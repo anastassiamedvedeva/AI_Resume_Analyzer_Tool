@@ -2,7 +2,7 @@ import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
 import {usePuterStore} from "~/lib/puter";
-import {Link, useLocation, useNavigate} from "react-router";
+import {Link, useNavigate} from "react-router";
 import {useEffect, useState} from "react";
 
 export function meta({}: Route.MetaArgs) {
@@ -15,14 +15,13 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
     const { auth, kv } = usePuterStore();
     const navigate = useNavigate();
-    const [resumeUrl, setResumeUrl] = useState("");
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loadingResumes, setLoadingResumes] = useState(false);
 
     // If not authenticated, redirect back to auth page
     useEffect(() => {
         if(!auth.isAuthenticated) navigate('/auth?next=/');
-    }, [auth.isAuthenticated]);
+    }, [auth.isAuthenticated])
 
     useEffect(() => {
         const loadResumes = async () => {
@@ -38,40 +37,44 @@ export default function Home() {
             setLoadingResumes(false);
         }
 
-        loadResumes();
+        loadResumes()
     }, []);
 
 
-    return <main className="bg-[url('./images/bg-main.svg')] bg-cover">
+    return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
-    <section className="main-section">
-    <div className="page-heading py-16">
-        <h1>Track Your Applications & Resume Ratings</h1>
 
-        {loadingResumes && (
-            <div className="flex flex-col items-center justify-center">
-                <img src="/images/resume-scan-2.gif" className="w-[200px]" alt="" />
+        <section className="main-section">
+            <div className="page-heading py-16">
+                <h1>Track Your Applications & Resume Ratings</h1>
+                {!loadingResumes && resumes?.length === 0 ? (
+                    <h2>No resumes found. Upload your first resume to get feedback.</h2>
+                ): (
+                    <h2>Review your submissions and check AI-powered feedback.</h2>
+                )}
             </div>
-        )}
 
-        {!loadingResumes && resumes.length > 0 && (
-            <div className="resumes-section">
-                {resumes.map((resume) => (
-                    <ResumeCard key={resume.id} resume={resume} />
-                ))}
-            </div>
-        )}
+            {loadingResumes && (
+                <div className="flex flex-col items-center justify-center">
+                    <img src="/images/resume-scan-2.gif" className="w-[200px]" />
+                </div>
+            )}
 
-        {!loadingResumes && resumes?.length === 0 && (
-            <div className="flex flex-col items-center justify-center mt-10 gap-4">
-                <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
-                    Upload Resume
-                </Link>
-            </div>
-        )}
-    </div>
+            {!loadingResumes && resumes.length > 0 && (
+                <div className="resumes-section">
+                    {resumes.map((resume) => (
+                        <ResumeCard key={resume.id} resume={resume} />
+                    ))}
+                </div>
+            )}
 
-    </section>
-
-  </main>;
+            {!loadingResumes && resumes?.length === 0 && (
+                <div className="flex flex-col items-center justify-center mt-10 gap-4">
+                    <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
+                        Upload Resume
+                    </Link>
+                </div>
+            )}
+        </section>
+  </main>
 }

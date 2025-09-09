@@ -8,9 +8,9 @@ interface Resume {
 }
 
 interface Feedback {
-    overall_rating: number;
+    overallScore: number;
     ATS: {
-        ats_compatibility: number;
+        score: number;
         tips: {
             type: "good" | "improve";
             tip: string;
@@ -47,6 +47,4 @@ interface Feedback {
             tip: string;
             explanation: string;
         }[];
-    };
-}
-
+    }}

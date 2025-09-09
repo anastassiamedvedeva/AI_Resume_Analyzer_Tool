@@ -1,15 +1,17 @@
-import React, {useCallback, useState} from 'react'
+import React, {useState, useCallback} from 'react'
 import {useDropzone} from 'react-dropzone'
-import { formatSize} from "~/lib/utils";
+import { formatSize } from '~/lib/utils'
 
 interface FileUploaderProps {
-    onFileSelect?: (file: any) => void;
+    onFileSelect?: ( file:File | null ) => void;
 }
+
 const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
 
     // react-dropzone hook
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const file = acceptedFiles[0] || null;
+
         onFileSelect?.(file);
     }, [onFileSelect]);
 
@@ -20,16 +22,18 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
         multiple: false,
         accept: { 'application/pdf': ['.pdf']},
         maxSize: maxFileSize,
-    });
+    })
 
     const file = acceptedFiles[0] || null;
+
+
 
     return (
         <div className="w-full gradient-border">
             <div {...getRootProps()}>
                 <input {...getInputProps()} />
 
-                    <div className="space-y-4 curson-pointer">
+                    <div className="space-y-4 cursor-pointer">
                         {file ? (
                             <div className="uploader-selected-file" onClick={(e) => e.stopPropagation()}>
                                 <img src="/images/pdf.png" alt="pdf" className="size-10" />
@@ -44,7 +48,7 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
                                     </div>
                                 </div>
                                 <button className="p-2 cursor-pointer" onClick={(e) => {
-                                    onFileSelect?.(null);
+                                    onFileSelect?.(null)
                                 }}>
                                     <img src="/icons/cross.svg" alt="remove" className="w-4 h-4" />
                                 </button>
@@ -55,8 +59,9 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
                                     <img src="/icons/info.svg" alt="upload" className="size-20" />
                                 </div>
                                 <p className="text-lg text-gray-500">
-                                    <span className="font-semibold">Click to Upload</span> or drag and drop</p>
-                                <p className="text-lg text-gray-500">PDF (max 20 MB)</p>
+                                    <span className="font-semibold">Click to Upload
+                                    </span> or drag and drop</p>
+                                <p className="text-lg text-gray-500">PDF (max {formatSize(maxFileSize)})</p>
                             </div>
                         )}
                     </div>
